@@ -16,11 +16,8 @@ return new class extends Migration
             $table->integer('quantidade');
             $table->date('data_movimentacao');
             $table->enum('tipo', ['entrada', 'saida']);
-            //coluna produto id que faz referencia com a tabela
-            //produto campo id
             $table->foreignId('produto_id')->constrained();
-            
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });

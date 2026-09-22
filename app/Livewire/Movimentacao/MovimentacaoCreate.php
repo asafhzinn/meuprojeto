@@ -8,7 +8,6 @@ use Livewire\Component;
 
 class MovimentacaoCreate extends Component
 {
-    public $produtos;
     public $idProdutoSelecionado;
     public $tipo = 'saida';
     public $quantidade;
@@ -17,57 +16,56 @@ class MovimentacaoCreate extends Component
 
     public function mount()
     {
-        $this->produtos = Produto::orderBy('nome')->get();
         $this->data_movimentacao = now()->format('Y-m-d');
     }
 
     public function store()
     {
+        $this->validate([
+            'idProdutoSelecionado' => 'required',
+            'quantidade' => 'required|integer|min:1',
+            'tipo' => 'required|in:entrada,saida',
+            'data_movimentacao' => 'required|date'
+        ]);
+
         $produto = Produto::find($this->idProdutoSelecionado);
-        if($produto->qtd_estoque < $this->quantidade && $this->tipo == 'saida'){
-            $this->addError('quantidade', 'qunatidade em estoque insuficiente');
+        
+        if($produto->quantidade_estoque < $this->quantidade && $this->tipo == 'saida'){
+            $this->addError('quantidade', 'Quantidade em estoque insuficiente');
             return;
         }
 
-        // Entrada e saida de estoque atualizar
         if ($this->tipo == "entrada") {
-            //$produto->qtd_estoque = $produto->qtd_estoque + $this->quantidade;
-            $produto->qtd_estoque += $this->quantidade;
-            //$produto->increment('qtd_estoque', $this->quantidade);
+            $produto->quantidade_estoque += $this->quantidade;
         } else {
-            //$produto->qtd_estoque = $produto->qtd_estoque - $this->quantidade;
-            $produto->qtd_estoque -= $this->quantidade;
-            //$produto->decrement('qtd_estoque', $this->quantidade);
+            $produto->quantidade_estoque -= $this->quantidade;
         }
 
-        //Registrar Movimentação
         Movimentacao::create([
             'quantidade' => $this->quantidade,
             'data_movimentacao' => $this->data_movimentacao,
             'tipo' => $this->tipo,
             'produto_id' => $this->idProdutoSelecionado,
-            'user_id' => 1
-
         ]);
 
-        $produto->update();
-
+        $produto->save();
         $produto->refresh();
-        if ($produto->qtd_estoque < $produto->qtd_minima) {
-            $this->alertaEstoqueBaixo = "ALERTA: Estoque baixo para
-                {$produto->nome}. Quantidade Atual:{$produto->qtd_estoque}";
+        
+        if ($produto->quantidade_estoque < 5) {
+            $this->alertaEstoqueBaixo = "ALERTA: Estoque baixo para {$produto->nome}. Quantidade Atual: {$produto->quantidade_estoque}";
         } else {
             $this->alertaEstoqueBaixo = "";
         }
 
         session()->flash('message', 'Movimentação registrada com sucesso');
 
-        $this->reset(['quantidade', 'tipo']);
-        $this->produtos = Produto::orderBy('nome')->get();
+        $this->reset(['quantidade', 'tipo', 'idProdutoSelecionado']);
     }
 
     public function render()
     {
-        return view('livewire.movimentacao.movimentacao-create');
+        return view('livewire.movimentacao.movimentacao-create', [
+            'produtos' => Produto::orderBy('nome')->get()
+        ]);
     }
 }

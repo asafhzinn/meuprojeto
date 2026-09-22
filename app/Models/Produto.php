@@ -4,20 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Produto extends Model
 {
     use HasFactory;
 
+    // Garanta que todos os novos campos estejam dentro deste array:
     protected $fillable = [
         'nome',
-        'valor',
-        'qtd_estoque',
-        'qtd_minima'
+        'cor',
+        'textura',
+        'peso',
+        'quantidade_estoque',
+        'faixa_etaria_minima'
     ];
-    public function movimentacoes(): HasMany
-    {
-        return $this->hasMany(Movimentacao::class);
-    }
 }

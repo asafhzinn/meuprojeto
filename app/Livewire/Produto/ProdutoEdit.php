@@ -8,10 +8,13 @@ use Livewire\Component;
 class ProdutoEdit extends Component
 {
     public $produto_id;
+    // Propriedades atualizadas conforme a Migration
     public $nome;
-    public $valor;
-    public $qtd_estoque;
-    public $qtd_minima;
+    public $cor;
+    public $textura;
+    public $peso;
+    public $quantidade_estoque;
+    public $faixa_etaria_minima;
 
     public function mount($id)
     {
@@ -23,14 +26,15 @@ class ProdutoEdit extends Component
 
         $this->produto_id = $produto->id;
         $this->nome = $produto->nome;
-        $this->valor = $produto->valor;
-        $this->qtd_estoque = $produto->qtd_estoque;
-        $this->qtd_minima = $produto->qtd_minima;
+        $this->cor = $produto->cor;
+        $this->textura = $produto->textura;
+        $this->peso = $produto->peso;
+        $this->quantidade_estoque = $produto->quantidade_estoque;
+        $this->faixa_etaria_minima = $produto->faixa_etaria_minima;
     }
 
     public function update()
     {
-
         $produto = Produto::find($this->produto_id);
 
         if ($produto == null) {
@@ -38,17 +42,27 @@ class ProdutoEdit extends Component
             return redirect()->route('produto.index');
         }
 
+        $this->validate([
+            'nome' => 'required|max:110',
+            'cor' => 'required|max:80',
+            'textura' => 'required|max:120',
+            'peso' => 'required|integer',
+            'quantidade_estoque' => 'required|integer',
+            'faixa_etaria_minima' => 'required|max:20',
+        ]);
+
         $produto->nome = $this->nome;
-        $produto->valor = $this->valor;
-        $produto->qtd_estoque = $this->qtd_estoque;
-        $produto->qtd_minima = $this->qtd_minima;
+        $produto->cor = $this->cor;
+        $produto->textura = $this->textura;
+        $produto->peso = $this->peso;
+        $produto->quantidade_estoque = $this->quantidade_estoque;
+        $produto->faixa_etaria_minima = $this->faixa_etaria_minima;
         
         $produto->save();
 
-        session()->flash('success', 'Atualizado');
+        session()->flash('success', 'Atualizado com sucesso!');
         return redirect()->route('produto.index');
     }
-
 
     public function render()
     {

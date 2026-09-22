@@ -7,16 +7,16 @@ use Livewire\Component;
 
 class ClienteCreate extends Component
 {
-    public $nome, $identificador, $cpf, $telefone, $cargo, $data_nascimento;
+    // Adicionada a propriedade $idade que estava faltando aqui:
+    public $nome, $identificador, $cpf, $telefone, $cargo, $data_nascimento, $idade;
 
     public function save()
     {
-        
-        // 2. Adicione uma validação para garantir que não fiquem vazios
+        // Corrigido de 'number' para 'numeric'
         $this->validate([
             'nome' => 'required',
             'cpf' => 'required',
-            'idade' => 'required|number',
+            'idade' => 'required|numeric',
         ]);
 
         Cliente::create([
@@ -26,5 +26,10 @@ class ClienteCreate extends Component
         ]);
 
         return redirect()->route('clientes.index');
+    }
+
+    public function render()
+    {
+        return view('livewire.cliente.cliente-create');
     }
 }

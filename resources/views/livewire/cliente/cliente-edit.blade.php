@@ -16,7 +16,6 @@
                         <label class="form-label">Idade</label>
                         <input type="text" wire:model="idade" class="form-control">
                     </div>
-                    <!-- Adicione os outros campos seguindo o mesmo padrão do Create -->
                     <div class="col-12 text-end">
                         <a href="/clientes" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary px-4">Atualizar</button>
